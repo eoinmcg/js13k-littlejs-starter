@@ -167,10 +167,6 @@ function debugText(text, pos, size=1, color='#fff', time=0, angle=0, font='monos
  *  @memberof Debug */
 function debugClear() { debugPrimitives = []; }
 
-/** Trigger debug system to take a screenshot
- *  @memberof Debug */
-function debugScreenshot() { debugTakeScreenshot = 1; }
-
 /** Save a canvas to disk 
  *  @param {HTMLCanvasElement} canvas
  *  @param {String}            [filename]
@@ -244,7 +240,7 @@ function debugUpdate()
         if (keyWasPressed('Digit4'))
             debugRaycast = !debugRaycast;
         if (keyWasPressed('Digit5'))
-            debugScreenshot();
+            debugTakeScreenshot = 1;
     }
 }
 
@@ -933,11 +929,11 @@ class Vector2
         return this.x*v.y - this.y*v.x;
     }
 
-    /** Returns the clockwise angle of this vector, up is angle 0
+    /** Returns the angle of this vector, up is angle 0
      * @return {Number} */
     angle() { return Math.atan2(this.x, this.y); }
 
-    /** Sets this vector with clockwise angle and length passed in
+    /** Sets this vector with angle and length passed in
      * @param {Number} [angle]
      * @param {Number} [length]
      * @return {Vector2} */
@@ -948,7 +944,7 @@ class Vector2
         return this;
     }
 
-    /** Returns copy of this vector rotated by the clockwise angle passed in
+    /** Returns copy of this vector rotated by the angle passed in
      * @param {Number} angle
      * @return {Vector2} */
     rotate(angle)
@@ -1289,57 +1285,57 @@ class Color
 ///////////////////////////////////////////////////////////////////////////////
 // default colors
 
-/** Color - White #ffffff
+/** Color - White
  *  @type {Color}
  *  @memberof Utilities */
-const WHITE = rgb(); 
+const WHITE = rgb();
 
-/** Color - Black #000000
+/** Color - Black
  *  @type {Color}
  *  @memberof Utilities */
 const BLACK = rgb(0,0,0);
 
-/** Color - Gray #808080
+/** Color - Gray
  *  @type {Color}
  *  @memberof Utilities */
 const GRAY = rgb(.5,.5,.5);
 
-/** Color - Red #ff0000
+/** Color - Red
  *  @type {Color}
  *  @memberof Utilities */
 const RED = rgb(1,0,0);
 
-/** Color - Orange #ff8000
+/** Color - Orange
  *  @type {Color}
  *  @memberof Utilities */
 const ORANGE = rgb(1,.5,0);
 
-/** Color - Yellow #ffff00
+/** Color - Yellow
  *  @type {Color}
  *  @memberof Utilities */
 const YELLOW = rgb(1,1,0);
 
-/** Color - Green #00ff00
+/** Color - Green
  *  @type {Color}
  *  @memberof Utilities */
 const GREEN = rgb(0,1,0);
 
-/** Color - Cyan #00ffff
+/** Color - Cyan
  *  @type {Color}
  *  @memberof Utilities */
 const CYAN = rgb(0,1,1);
 
-/** Color - Blue #0000ff
+/** Color - Blue
  *  @type {Color}
  *  @memberof Utilities */
 const BLUE = rgb(0,0,1);
 
-/** Color - Purple #8000ff
+/** Color - Purple
  *  @type {Color}
  *  @memberof Utilities */
 const PURPLE = rgb(.5,0,1);
 
-/** Color - Magenta #ff00ff
+/** Color - Magenta
  *  @type {Color}
  *  @memberof Utilities */
 const MAGENTA = rgb(1,0,1);
@@ -2237,11 +2233,11 @@ class EngineObject
 
     /** Convert from local space to world space for a vector (rotation only)
      *  @param {Vector2} vec - local space vector */
-    localToWorldVector(vec) { return vec.rotate(this.angle); }
+    localToWorldVector(vec) { return vec.rotate(-this.angle); }
 
     /** Convert from world space to local space for a vector (rotation only)
      *  @param {Vector2} vec - world space vector */
-    worldToLocalVector(vec) { return vec.rotate(-this.angle); }
+    worldToLocalVector(vec) { return vec.rotate(this.angle); }
     
     /** Called to check if a tile collision should be resolved
      *  @param {Number}  tileData - the value of the tile at the position
@@ -2562,8 +2558,6 @@ function drawTile(pos, size=vec2(1), tileInfo, color=new Color,
     ASSERT(!context || !useWebGL, 'context only supported in canvas 2D mode'); 
     ASSERT(typeof tileInfo !== 'number' || !tileInfo, 
         'this is an old style calls, to fix replace it with tile(tileIndex, tileSize)');
-    ASSERT(isVector2(pos) && isVector2(size));
-    ASSERT(isColor(color) && isColor(additiveColor));
 
     const textureInfo = tileInfo && tileInfo.getTextureInfo();
     if (useWebGL)
@@ -2617,7 +2611,7 @@ function drawTile(pos, size=vec2(1), tileInfo, color=new Color,
             else
             {
                 // if no tile info, force untextured
-                context.fillStyle = color.toString();
+                context.fillStyle = color;
                 context.fillRect(-.5, -.5, 1, 1);
             }
         }, screenSpace, context);
@@ -2664,7 +2658,6 @@ function drawLine(posA, posB, thickness=.1, color, useWebGL, screenSpace, contex
  *  @memberof Draw */
 function drawPoly(points, color=new Color, lineWidth=0, lineColor=new Color(0,0,0), screenSpace, context=mainContext)
 {
-    ASSERT(isColor(color) && isColor(lineColor));
     context.fillStyle = color.toString();
     context.beginPath();
     for (const point of screenSpace ? points : points.map(worldToScreen))
@@ -2692,7 +2685,6 @@ function drawPoly(points, color=new Color, lineWidth=0, lineColor=new Color(0,0,
  *  @memberof Draw */
 function drawEllipse(pos, width=1, height=1, angle=0, color=new Color, lineWidth=0, lineColor=new Color(0,0,0), screenSpace, context=mainContext)
 {
-    ASSERT(isColor(color) && isColor(lineColor));
     if (!screenSpace)
     {
         pos = worldToScreen(pos);
@@ -3011,15 +3003,6 @@ function keyWasReleased(key, device=0)
     return inputData[device] && !!(inputData[device][key] & 4);
 }
 
-/** Returns input vector from arrow keys or WASD if enabled
- *  @return {Vector2}
- *  @memberof Input */
-function keyDirection(up='ArrowUp', down='ArrowDown', left='ArrowLeft', right='ArrowRight')
-{
-    const k = (key)=> keyIsDown(key) ? 1 : 0;
-    return vec2(k(right) - k(left), k(up) - k(down));
-}
-
 /** Clears all input
  *  @memberof Input */
 function clearInput() { inputData = [[]]; touchGamepadButtons = []; }
@@ -3103,9 +3086,9 @@ function gamepadStick(stick,  gamepad=0)
 { return gamepadStickData[gamepad] ? gamepadStickData[gamepad][stick] || vec2() : vec2(); }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Input system functions called automatically by engine
+// Input update called by engine
 
-// input is stored as a bit field for each key: 1 = isDown, 2 = wasPressed, 4 = wasReleased
+// store input as a bit field for each key: 1 = isDown, 2 = wasPressed, 4 = wasReleased
 // mouse and keyboard are stored together in device 0, gamepads are in devices > 0
 let inputData = [[]];
 
@@ -3134,6 +3117,9 @@ function inputUpdatePost()
         deviceInputData[i] &= 1;
     mouseWheel = 0;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// Input event handlers
 
 function inputInit()
 {
@@ -3177,11 +3163,11 @@ function inputInit()
         
         isUsingGamepad = false; 
         inputData[0][e.button] = 3; 
-        mousePosScreen = mouseEventToScreen(e); 
+        mousePosScreen = mouseToScreen(e); 
         e.button && e.preventDefault();
     }
     onmouseup     = (e)=> inputData[0][e.button] = inputData[0][e.button] & 2 | 4;
-    onmousemove   = (e)=> mousePosScreen = mouseEventToScreen(e);
+    onmousemove   = (e)=> mousePosScreen = mouseToScreen(e);
     onwheel       = (e)=> mouseWheel = e.ctrlKey ? 0 : sign(e.deltaY);
     oncontextmenu = (e)=> false; // prevent right click menu
     onblur        = (e) => clearInput(); // reset input when focus is lost
@@ -3192,12 +3178,14 @@ function inputInit()
 }
 
 // convert a mouse or touch event position to screen space
-function mouseEventToScreen(mousePos)
+function mouseToScreen(mousePos)
 {
+    if (!mainCanvas || headlessMode)
+        return vec2(); // fix bug that can occur if user clicks before page loads
+
     const rect = mainCanvas.getBoundingClientRect();
-    const px = percent(mousePos.x, rect.left, rect.right);
-    const py = percent(mousePos.y, rect.top, rect.bottom);
-    return vec2(px*mainCanvas.width, py*mainCanvas.height);
+    return vec2(mainCanvas.width, mainCanvas.height).multiply(
+        vec2(percent(mousePos.x, rect.left, rect.right), percent(mousePos.y, rect.top, rect.bottom)));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3352,7 +3340,7 @@ function touchInputInit()
         {
             // set event pos and pass it along
             const p = vec2(e.touches[0].clientX, e.touches[0].clientY);
-            mousePosScreen = mouseEventToScreen(p);
+            mousePosScreen = mouseToScreen(p);
             wasTouching ? isUsingGamepad = touchGamepadEnable : inputData[0][button] = 3;
         }
         else if (wasTouching)
@@ -3400,7 +3388,7 @@ function touchInputInit()
         // check each touch point
         for (const touch of e.touches)
         {
-            const touchPos = mouseEventToScreen(vec2(touch.clientX, touch.clientY));
+            const touchPos = mouseToScreen(vec2(touch.clientX, touch.clientY));
             if (touchPos.distance(stickCenter) < touchGamepadSize)
             {
                 // virtual analog stick
@@ -4317,10 +4305,10 @@ class TileLayer extends EngineObject
         !glOverlay && !this.isOverlay && glCopyToContext(mainContext);
         
         // draw the entire cached level onto the canvas
-        let pos = worldToScreen(this.pos.add(vec2(0,this.size.y*this.scale.y)));
+        const pos = worldToScreen(this.pos.add(vec2(0,this.size.y*this.scale.y)));
         
         // fix canvas jitter in some browsers if position is not an integer
-        pos = pos.floor();
+        pos.x |= 0; pos.y |= 0;
 
         (this.isOverlay ? overlayContext : mainContext).drawImage
         (
@@ -4404,7 +4392,7 @@ class TileLayer extends EngineObject
         {
             ASSERT(mainContext == this.context, 'must call redrawStart() before drawing tiles');
             const pos = layerPos.add(vec2(.5));
-            const tileInfo = tile(d.tile, s, this.tileInfo.textureIndex);
+            const tileInfo = tile(d.tile, s, this.tileInfo.textureIndex, this.tileInfo.padding);
             drawTile(pos, vec2(1), tileInfo, d.color, d.direction*PI/2, d.mirror);
         }
     }
@@ -5067,8 +5055,8 @@ function glInit()
 
     // create the geometry buffer, triangle strip square
     const geometry = new Float32Array([glInstanceCount=0,0,1,0,0,1,1,1]);
-    glContext.bindBuffer(glContext.ARRAY_BUFFER, glGeometryBuffer);
-    glContext.bufferData(glContext.ARRAY_BUFFER, geometry, glContext.STATIC_DRAW);
+    glContext.bindBuffer(gl_ARRAY_BUFFER, glGeometryBuffer);
+    glContext.bufferData(gl_ARRAY_BUFFER, geometry, gl_STATIC_DRAW);
 }
 
 // Setup render each frame, called automatically by engine
@@ -5079,9 +5067,9 @@ function glPreRender()
     // set up the shader and canvas
     glClearCanvas();
     glContext.useProgram(glShader);
-    glContext.activeTexture(glContext.TEXTURE0);
+    glContext.activeTexture(gl_TEXTURE0);
     if (textureInfos[0])
-        glContext.bindTexture(glContext.TEXTURE_2D, glActiveTexture = textureInfos[0].glTexture);
+        glContext.bindTexture(gl_TEXTURE_2D, glActiveTexture = textureInfos[0].glTexture);
 
     // set vertex attributes
     let offset = glAdditive = glBatchAdditive = 0;
@@ -5096,15 +5084,15 @@ function glPreRender()
         glContext.vertexAttribDivisor(location, divisor);
         offset += size*typeSize;
     }
-    glContext.bindBuffer(glContext.ARRAY_BUFFER, glGeometryBuffer);
-    initVertexAttribArray('g', glContext.FLOAT, 0, 2); // geometry
-    glContext.bindBuffer(glContext.ARRAY_BUFFER, glArrayBuffer);
-    glContext.bufferData(glContext.ARRAY_BUFFER, gl_INSTANCE_BUFFER_SIZE, glContext.DYNAMIC_DRAW);
-    initVertexAttribArray('p', glContext.FLOAT, 4, 4); // position & size
-    initVertexAttribArray('u', glContext.FLOAT, 4, 4); // texture coords
-    initVertexAttribArray('c', glContext.UNSIGNED_BYTE, 1, 4); // color
-    initVertexAttribArray('a', glContext.UNSIGNED_BYTE, 1, 4); // additiveColor
-    initVertexAttribArray('r', glContext.FLOAT, 4, 1); // rotation
+    glContext.bindBuffer(gl_ARRAY_BUFFER, glGeometryBuffer);
+    initVertexAttribArray('g', gl_FLOAT, 0, 2); // geometry
+    glContext.bindBuffer(gl_ARRAY_BUFFER, glArrayBuffer);
+    glContext.bufferData(gl_ARRAY_BUFFER, gl_INSTANCE_BUFFER_SIZE, gl_DYNAMIC_DRAW);
+    initVertexAttribArray('p', gl_FLOAT, 4, 4); // position & size
+    initVertexAttribArray('u', gl_FLOAT, 4, 4); // texture coords
+    initVertexAttribArray('c', gl_UNSIGNED_BYTE, 1, 4); // color
+    initVertexAttribArray('a', gl_UNSIGNED_BYTE, 1, 4); // additiveColor
+    initVertexAttribArray('r', gl_FLOAT, 4, 1); // rotation
 
     // build the transform matrix
     const s = vec2(2*cameraScale).divide(mainCanvasSize);
@@ -5125,7 +5113,7 @@ function glClearCanvas()
 {
     // clear and set to same size as main canvas
     glContext.viewport(0, 0, glCanvas.width=mainCanvas.width, glCanvas.height=mainCanvas.height);
-    glContext.clear(glContext.COLOR_BUFFER_BIT);
+    glContext.clear(gl_COLOR_BUFFER_BIT);
 }
 
 /** Set the WebGl texture, called automatically if using multiple textures
@@ -5139,7 +5127,7 @@ function glSetTexture(texture)
         return;
 
     glFlush();
-    glContext.bindTexture(glContext.TEXTURE_2D, glActiveTexture = texture);
+    glContext.bindTexture(gl_TEXTURE_2D, glActiveTexture = texture);
 }
 
 /** Compile WebGL shader of the given type, will throw errors if in debug mode
@@ -5155,7 +5143,7 @@ function glCompileShader(source, type)
     glContext.compileShader(shader);
 
     // check for errors
-    if (debug && !glContext.getShaderParameter(shader, glContext.COMPILE_STATUS))
+    if (debug && !glContext.getShaderParameter(shader, gl_COMPILE_STATUS))
         throw glContext.getShaderInfoLog(shader);
     return shader;
 }
@@ -5169,12 +5157,12 @@ function glCreateProgram(vsSource, fsSource)
 {
     // build the program
     const program = glContext.createProgram();
-    glContext.attachShader(program, glCompileShader(vsSource, glContext.VERTEX_SHADER));
-    glContext.attachShader(program, glCompileShader(fsSource, glContext.FRAGMENT_SHADER));
+    glContext.attachShader(program, glCompileShader(vsSource, gl_VERTEX_SHADER));
+    glContext.attachShader(program, glCompileShader(fsSource, gl_FRAGMENT_SHADER));
     glContext.linkProgram(program);
 
     // check for errors
-    if (debug && !glContext.getProgramParameter(program, glContext.LINK_STATUS))
+    if (debug && !glContext.getProgramParameter(program, gl_LINK_STATUS))
         throw glContext.getProgramInfoLog(program);
     return program;
 }
@@ -5187,20 +5175,20 @@ function glCreateTexture(image)
 {
     // build the texture
     const texture = glContext.createTexture();
-    glContext.bindTexture(glContext.TEXTURE_2D, texture);
+    glContext.bindTexture(gl_TEXTURE_2D, texture);
     if (image && image.width)
-        glContext.texImage2D(glContext.TEXTURE_2D, 0, glContext.RGBA, glContext.RGBA, glContext.UNSIGNED_BYTE, image);
+        glContext.texImage2D(gl_TEXTURE_2D, 0, gl_RGBA, gl_RGBA, gl_UNSIGNED_BYTE, image);
     else
     {
         // create a white texture
         const whitePixel = new Uint8Array([255, 255, 255, 255]);
-        glContext.texImage2D(glContext.TEXTURE_2D, 0, glContext.RGBA, 1, 1, 0, glContext.RGBA, glContext.UNSIGNED_BYTE, whitePixel);
+        glContext.texImage2D(gl_TEXTURE_2D, 0, gl_RGBA, 1, 1, 0, gl_RGBA, gl_UNSIGNED_BYTE, whitePixel);
     }
 
     // use point filtering for pixelated rendering
-    const filter = tilesPixelated ? glContext.NEAREST : glContext.LINEAR;
-    glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_MIN_FILTER, filter);
-    glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_MAG_FILTER, filter);
+    const filter = tilesPixelated ? gl_NEAREST : gl_LINEAR;
+    glContext.texParameteri(gl_TEXTURE_2D, gl_TEXTURE_MIN_FILTER, filter);
+    glContext.texParameteri(gl_TEXTURE_2D, gl_TEXTURE_MAG_FILTER, filter);
     return texture;
 }
 
@@ -5210,13 +5198,13 @@ function glFlush()
 {
     if (!glInstanceCount) return;
 
-    const destBlend = glBatchAdditive ? glContext.ONE : glContext.ONE_MINUS_SRC_ALPHA;
-    glContext.blendFuncSeparate(glContext.SRC_ALPHA, destBlend, glContext.ONE, destBlend);
-    glContext.enable(glContext.BLEND);
+    const destBlend = glBatchAdditive ? gl_ONE : gl_ONE_MINUS_SRC_ALPHA;
+    glContext.blendFuncSeparate(gl_SRC_ALPHA, destBlend, gl_ONE, destBlend);
+    glContext.enable(gl_BLEND);
 
     // draw all the sprites in the batch and reset the buffer
-    glContext.bufferSubData(glContext.ARRAY_BUFFER, 0, glPositionData);
-    glContext.drawArraysInstanced(glContext.TRIANGLE_STRIP, 0, 4, glInstanceCount);
+    glContext.bufferSubData(gl_ARRAY_BUFFER, 0, glPositionData);
+    glContext.drawArraysInstanced(gl_TRIANGLE_STRIP, 0, 4, glInstanceCount);
     if (showWatermark)
         drawCount += glInstanceCount;
     glInstanceCount = 0;
@@ -5281,6 +5269,33 @@ function glDraw(x, y, sizeX, sizeY, angle, uv0X, uv0Y, uv1X, uv1Y, rgba, rgbaAdd
     glColorData[offset++] = rgbaAdditive;
     glPositionData[offset++] = angle;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// store gl constants as integers so their name doesn't use space in minifed
+const
+gl_ONE = 1,
+gl_TRIANGLE_STRIP = 5,
+gl_SRC_ALPHA = 770,
+gl_ONE_MINUS_SRC_ALPHA = 771,
+gl_BLEND = 3042,
+gl_TEXTURE_2D = 3553,
+gl_UNSIGNED_BYTE = 5121,
+gl_FLOAT = 5126,
+gl_RGBA = 6408,
+gl_NEAREST = 9728,
+gl_LINEAR = 9729,
+gl_TEXTURE_MAG_FILTER = 10240,
+gl_TEXTURE_MIN_FILTER = 10241,
+gl_COLOR_BUFFER_BIT = 16384,
+gl_TEXTURE0 = 33984,
+gl_ARRAY_BUFFER = 34962,
+gl_STATIC_DRAW = 35044,
+gl_DYNAMIC_DRAW = 35048,
+gl_FRAGMENT_SHADER = 35632,
+gl_VERTEX_SHADER = 35633,
+gl_COMPILE_STATUS = 35713,
+gl_LINK_STATUS = 35714,
+gl_UNPACK_FLIP_Y_WEBGL = 37440;
 /** 
  * LittleJS - The Tiny Fast JavaScript Game Engine
  * MIT License - Copyright 2021 Frank Force
@@ -5313,7 +5328,7 @@ const engineName = 'LittleJS';
  *  @type {String}
  *  @default
  *  @memberof Engine */
-const engineVersion = '1.11.9';
+const engineVersion = '1.11.7a';
 
 /** Frames per second to update
  *  @type {Number}
@@ -5398,18 +5413,6 @@ function engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRender
 {
     ASSERT(!mainContext, 'engine already initialized');
     ASSERT(Array.isArray(imageSources), 'pass in images as array');
-
-    // allow passing in empty functions
-    if (!gameInit)
-        gameInit = ()=>{};
-    if (!gameUpdate)
-        gameUpdate = ()=>{};
-    if (!gameUpdatePost)
-        gameUpdatePost = ()=>{};
-    if (!gameRender)
-        gameRender = ()=>{};
-    if (!gameRenderPost)
-        gameRenderPost = ()=>{};
 
     // Called automatically by engine to setup render system
     function enginePreRender()
@@ -5910,4 +5913,5 @@ function drawEngineSplashScreen(t)
     
     x.restore();
 }
+
 
