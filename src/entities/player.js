@@ -37,8 +37,8 @@ export default class Player extends EngineObject {
     this.tileInfo.pos.x = frame;
     this.mirror = this.velocity.x > 0;
 
-    // this.pos.x = clamp(this.pos.x, this.halfSize, this.maxX);
-    // this.pos.y = clamp(this.pos.y, this.halfSize, this.maxY);
+    this.pos.x = clamp(this.pos.x, this.halfSize, this.maxX);
+    this.pos.y = clamp(this.pos.y, this.halfSize, this.maxY);
 
     if (this.shoot) {
       new Bullet(this.pos);
