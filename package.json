@@ -1,7 +1,7 @@
 {
   "name": "js13k-littlejs-starter",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -16,6 +16,6 @@
     "google-closure-compiler": "^20250721.0.0",
     "roadroller": "^2.1.0",
     "terser": "^5.43.1",
-    "vite": "^7.0.4"
+    "vite": "^7.3.1"
   }
 }
