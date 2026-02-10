@@ -4,18 +4,16 @@
 
 Get a head start on the [JS13k game jam](https://js13kgames.com/) with this
 batteries-included starter template. It's built with the lightweight
-and powerful [LittleJS game engine](https://github.com/KilledByAPixel/LittleJS), giving
+and powerful [LittleJS game engine](https://github.com/KilledByAPixel/LittleJS) by Frank Force, giving
 you everything you need to start building your game right away.
 
 ---
 
 ## **Quick Start**
 
-1. **Clone the repository:** `git clone [https://github.com/eoinmcg/js13k-littlejs-starter]`
+    npm create js13k-littlejs
 
-2. **Install dependencies:** `npm install`
-
-3. **Start the development server:** `npm run dev`
+**Note:** Don't clone this repo directly. Use the above command to create your workflow.
 
 ---
 
