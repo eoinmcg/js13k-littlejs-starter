@@ -1,3 +1,6 @@
+// data.json can contain all game settings
+import data from "./data.json" assert { type: "json" };
+
 // import everything
 import * as LJ from "@engine/littlejs.esm";
 
@@ -11,9 +14,15 @@ import {
   engineInit,
 } from "@engine/littlejs.esm";
 
+import Player from "./entities/player";
+
 setTileDefaultBleed(0.5);
 
-function gameInit() {}
+let player;
+
+function gameInit() {
+  player = new Player(vec2(0, 2), vec2(1));
+}
 
 function gameUpdate() {}
 
@@ -33,6 +42,5 @@ function gameRender() {
 function gameRenderPost() {}
 
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, [
-  "/t.gif",
+  data.tiles,
 ]);
-console.log("MODS!", LJ.engineInit);

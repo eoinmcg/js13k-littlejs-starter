@@ -1,3 +1,5 @@
+import data from "./data.json" assert { type: "json" };
+
 tileFixBleedScale = 0.5;
 
 function gameInit() {}
@@ -20,5 +22,5 @@ function gameRender() {
 function gameRenderPost() {}
 
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, [
-  "/t.gif",
+  data.tiles,
 ]);

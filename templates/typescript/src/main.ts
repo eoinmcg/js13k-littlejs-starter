@@ -1,3 +1,4 @@
+import data from "./data.json" assert { type: "json" };
 import * as LJ from "@engine/littlejs.esm";
 
 // or choose just the stuff you need
@@ -32,5 +33,5 @@ function gameRender() {
 function gameRenderPost() {}
 
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, [
-  "/t.gif",
+  data.tiles,
 ]);
