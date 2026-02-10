@@ -4,7 +4,7 @@
 
 Get a head start on the [JS13k game jam](https://js13kgames.com/) with this
 batteries-included starter template. It's built with the lightweight
-and powerful [LittleJS game engine](https://littlejs.org/), giving
+and powerful [LittleJS game engine](https://github.com/KilledByAPixel/LittleJS), giving
 you everything you need to start building your game right away.
 
 ---
