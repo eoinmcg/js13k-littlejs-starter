@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      // This MUST match the name and path of your Vite alias
+      "@engine/*": [
+        "../../littlejs/*"
+      ]
+    },
+    "types": [
+      "vite/client"
+    ]
+  },
+  "include": [
+    "main.ts",
+    "../../littlejs/littlejs.d.ts"
+  ]
+}

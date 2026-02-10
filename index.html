@@ -4,10 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='1em' font-size='80'>👾</text></svg>">
+    <style>
+    body { font-family: monospace; margin: 3rem auto; max-width: 400px; }
+    h1 { margin-bottom: 2rem; }
+    li { list-style: none; font-size: 120%; margin-bottom: 1rem; }
+    a { text-decoration: none;}
+    a:hover { text-decoration: underline;}
+    </style>
   </head>
-  <body>
-    <script src="/littlejs.js"></script>
-    <script type="module" src="/src/main.js"></script>
-
-  </body>
+  <h1>LittleJS Starter Lab</h1>
+  <ul>
+    <li><a href="/templates/vanilla/index.html">Vanilla (Global)</a></li>
+    <li><a href="/templates/modular/index.html">Modular (ESM)</a></li>
+    <li><a href="/templates/typescript/index.html">TypeScript</a></li>
+  </ul>
 </html>
