@@ -6,7 +6,6 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      // This MUST match the name and path of your Vite alias
       "@engine/*": [
         "../../littlejs/*"
       ]
