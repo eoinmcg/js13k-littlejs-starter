@@ -1,16 +1,32 @@
 import { defineConfig } from "vite";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import fs from "fs";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Helper to only include paths that exist
+const getInputEntries = () => {
+  const entries = {
+    main: resolve(__dirname, "index.html"),
+  };
+
+  const templates = ["vanilla", "modular", "typescript"];
+
+  templates.forEach((t) => {
+    const path = resolve(__dirname, `templates/${t}/index.html`);
+    if (fs.existsSync(path)) {
+      entries[t] = path;
+    }
+  });
+
+  return entries;
+};
 
 export default defineConfig({
   base: "",
   build: {
     rollupOptions: {
-      input: {
-        main: resolve(__dirname, "index.html"),
-        vanilla: resolve(__dirname, "templates/vanilla/index.html"),
-        modular: resolve(__dirname, "templates/modular/index.html"),
-        typescript: resolve(__dirname, "templates/typescript/index.html"),
-      },
+      input: getInputEntries(),
       output: {
         entryFileNames: "game.js",
         chunkFileNames: "game.js",
