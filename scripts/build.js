@@ -8,9 +8,6 @@ import child_process from "node:child_process";
 import chalk from "chalk";
 import { chalkError, chalkSuccess } from "./helpers.js";
 
-const dataPath = "../src/data.json";
-const Data = JSON.parse(fs.readFileSync(dataPath, "utf8"));
-
 // Get the directory of the current script
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,6 +18,10 @@ process.chdir(join(__dirname, ".."));
 // Read package.json to know the "mode"
 const pkg = JSON.parse(fs.readFileSync("./package.json", "utf8"));
 const mode = pkg.littlejsMode || "vanilla";
+
+// Get game data as we'll need to extract tiles
+const dataPath = "./src/data.json";
+const Data = JSON.parse(fs.readFileSync(dataPath, "utf8"));
 
 /**
  * LittleJS Build System
