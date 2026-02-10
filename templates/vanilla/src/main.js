@@ -1,5 +1,3 @@
-import { starfield } from "./entities/starfield";
-
 tileFixBleedScale = 0.5;
 
 function gameInit() {}
@@ -19,9 +17,7 @@ function gameRender() {
   drawTile(vec2(0, -5), vec2(3), tile(2, 8));
 }
 
-function gameRenderPost() {
-  starfield(false);
-}
+function gameRenderPost() {}
 
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, [
   "/t.gif",

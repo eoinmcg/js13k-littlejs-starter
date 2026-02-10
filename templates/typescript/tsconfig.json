@@ -16,7 +16,7 @@
     ]
   },
   "include": [
-    "main.ts",
+    "src/main.ts",
     "../../littlejs/littlejs.d.ts"
   ]
 }
