@@ -33,5 +33,5 @@ function gameRender() {
 function gameRenderPost() {}
 
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, [
-  data.tiles,
+  data.tiles[0],
 ]);
