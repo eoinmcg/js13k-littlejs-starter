@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import { fileURLToPath } from "url";
-import { resolve, dirname } from "path";
+import path, { resolve, dirname } from "path";
 import fs from "fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -25,6 +25,11 @@ const getInputEntries = () => {
 
 export default defineConfig({
   base: "",
+  // If 'public' exists in the current folder (CLI mode), use it.
+  // Otherwise, go up to the root 'public' (Lab mode).
+  publicDir: fs.existsSync(path.resolve(__dirname, "public"))
+    ? "public"
+    : "../../public",
   build: {
     rollupOptions: {
       input: getInputEntries(),
