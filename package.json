@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
+    "sync": "for dir in templates/typescript/src templates/vanilla/src templates/modular/src; do cp -r templates/shared/. $dir; done",
     "zip": "vite build && node scripts/build.js",
     "deploy": "node scripts/checkGit.js && npm run zip && gh-pages -d dist",
     "preview": "vite preview"

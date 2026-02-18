@@ -1,11 +1,3 @@
-import {
-  vec2,
-  tile,
-  time,
-  keyIsDown, keyWasPressed,
-  gamepadWasPressed, isUsingGamepad
-} from "@engine/littlejs.esm";
-
 import data from "../data.json" assert { type: "json" };
 import GameObject from "./gameObject";
 import Bullet from "./bullet";
@@ -59,4 +51,3 @@ export default class Player extends GameObject {
     this.setGameOver(time);
   }
 }
-

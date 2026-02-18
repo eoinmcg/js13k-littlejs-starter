@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+// Adapated from https://github.com/KilledByAPixel/LittleJS/blob/js13k/examples/starter/build.js
+
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import process from "process";
