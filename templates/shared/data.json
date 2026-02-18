@@ -3,7 +3,7 @@
   "width": 320,
   "height": 480,
   "tiles": [
-    "/t.gif"
+    "t.gif"
   ],
   "tileSize": 4,
   "sfx": {
