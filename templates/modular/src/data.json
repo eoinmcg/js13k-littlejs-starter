@@ -2,7 +2,9 @@
   "title": "LittleJS Starter",
   "width": 320,
   "height": 480,
-  "tiles": [ "/t.gif" ],
+  "tiles": [
+    "t.gif"
+  ],
   "tileSize": 4,
   "sfx": {
     "click": "1,.5",
