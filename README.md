@@ -11,7 +11,7 @@ you everything you need to start building your game right away.
 
 ## **Quick Start**
 
-    npm create js13k-littlejs
+    npm create js13k-littlejs@latest
 
 **Note:** Don't clone this repo directly. Use the above command to create your workflow.
 
