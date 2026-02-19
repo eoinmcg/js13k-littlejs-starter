@@ -33,7 +33,7 @@ LJS.setTileFixBleedScale(.5);
 // setShowWatermark(false)
 
 // setup onscreen gamepad for touch devices
-LJS.setTouchInputEnable(true);
+LJS.setTouchGamepadEnable(true);
 LJS.setTouchGamepadSize(50);
 LJS.setTouchGamepadAnalog(false);
 

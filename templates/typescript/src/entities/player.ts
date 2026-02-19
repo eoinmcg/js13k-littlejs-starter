@@ -3,7 +3,7 @@ import {
   tile,
   time,
   keyIsDown, keyWasPressed,
-  gamepadWasPressed, isUsingGamepad
+  gamepadStick, gamepadWasPressed, isUsingGamepad
 } from "@engine/littlejs.esm";
 
 import data from "../data.json" assert { type: "json" };

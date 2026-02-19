@@ -14,7 +14,7 @@ document.title = data.title;
 
 // setup onscreen gamepad for touch devices
 touchInputInit();
-setTouchInputEnable(true);
+setTouchGamepadEnable(true);
 setTouchGamepadSize(50);
 setTouchGamepadAnalog(false);
 
