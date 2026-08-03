@@ -18,7 +18,7 @@ import {
 } from "@engine/littlejs.esm";
 
 
-import data from "./data.json" assert { type: "json" };
+import data from "./data.json";
 import Player from "./entities/player";
 import Baddie from "./entities/baddie";
 import Starfield from "./starfield";
@@ -38,31 +38,38 @@ LJS.setTouchGamepadSize(50);
 LJS.setTouchGamepadAnalog(false);
 
 
-let player, font;
+let player: Player | undefined;
+let font: FontImage;
 let score = 0;
-let gameOver = 0;
+let gameOver: number = 0;
 let ready = false;
-const music = new Music(tune);
+const music = new Music(tune as [any[], any[], any[], number]);
 
-const sfx = {}
+type SfxMap = Record<string, Sound>;
+const sfx: SfxMap = {}
 Object.keys(data.sfx).forEach((key) => {
-  sfx[key] = new Sound(data.sfx[key].split(','));
+  sfx[key] = new Sound(data.sfx[key as keyof typeof data.sfx].split(','));
 });
 
-const updateScore = (val = 10) => (score += val);
-const setGameOver = (val) => {
+const updateScore = (val: number = 10) => (score += val);
+const setGameOver = (val: number) => {
   gameOver = val;
   music.stop();
 };
-const startGame = (opts) => {
+
+interface GameOpts {
+  sfx: SfxMap;
+  setGameOver: (val: number) => void;
+}
+const startGame = (opts: GameOpts): void => {
   LJS.clearInput();
-  setGameOver(false);
-  player = new Player({sfx, setGameOver});
+  setGameOver(0);
+  player = new Player({ sfx, setGameOver });
   music.play();
   score = 0;
 };
 
-function gameInit() {
+function gameInit(): void {
   const gameSize = vec2(data.width, data.height);
   LJS.setCanvasFixedSize(gameSize);
   LJS.setCanvasMaxSize(gameSize);
@@ -71,7 +78,7 @@ function gameInit() {
   font = new FontImage();
 }
 
-function gameUpdate() {
+function gameUpdate(): void {
   const clicked =
     keyWasPressed("Space") || keyWasPressed("KeyX") || gamepadWasPressed(2);
 
@@ -87,16 +94,15 @@ function gameUpdate() {
   }
 
   // randomly spawn baddie
-  if (!gameOver && ready && Math.random() > 0.991) {
+  if (!gameOver && player && ready && Math.random() > 0.991) {
     new Baddie(player, { sfx, updateScore });
   }
 }
 
-function gameUpdatePost() {}
+function gameUpdatePost(): void { }
 
-function gameRender() {
+function gameRender(): void {
   const flash = Math.sin(Date.now() * 0.005) > 0;
-  data.center = vec2(0)
 
   // splash screen
   if (!ready) {
