@@ -5,7 +5,7 @@ import {
   time, isUsingGamepad, Color, ParticleEmitter, PI
 } from "@engine/littlejs.esm";
 
-import data from "../data.json" assert { type: "json" };
+import data from "../data.json";
 import GameObject from "./gameObject";
 
 export default class Baddie extends GameObject {

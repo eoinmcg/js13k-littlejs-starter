@@ -1,4 +1,4 @@
-import data from "./data.json" assert { type: "json" };
+import data from "./data.json";
 import Player from "./entities/player";
 import Baddie from "./entities/baddie";
 import Starfield from "./starfield";
@@ -39,7 +39,7 @@ const setGameOver = (val) => {
 const startGame = (opts) => {
   clearInput();
   setGameOver(false);
-  player = new Player({sfx, setGameOver});
+  player = new Player({ sfx, setGameOver });
   music.play();
   score = 0;
 };
@@ -74,7 +74,7 @@ function gameUpdate() {
   }
 }
 
-function gameUpdatePost() {}
+function gameUpdatePost() { }
 
 function gameRender() {
   const flash = Math.sin(Date.now() * 0.005) > 0;

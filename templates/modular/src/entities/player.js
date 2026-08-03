@@ -6,12 +6,12 @@ import {
   gamepadStick, gamepadWasPressed, isUsingGamepad
 } from "@engine/littlejs.esm";
 
-import data from "../data.json" assert { type: "json" };
+import data from "../data.json";
 import GameObject from "./gameObject";
 import Bullet from "./bullet";
 
 export default class Player extends GameObject {
-  constructor({sfx, setGameOver}) {
+  constructor({ sfx, setGameOver }) {
     super(vec2(0), vec2(4), tile(0, 4));
     this.speed = .8;
 
@@ -38,9 +38,9 @@ export default class Player extends GameObject {
     this.velocity = isUsingGamepad
       ? gamepadStick(0)
       : vec2(
-          keyIsDown("ArrowRight") - keyIsDown("ArrowLeft"),
-          keyIsDown("ArrowUp") - keyIsDown("ArrowDown"),
-        );
+        keyIsDown("ArrowRight") - keyIsDown("ArrowLeft"),
+        keyIsDown("ArrowUp") - keyIsDown("ArrowDown"),
+      );
 
     this.shoot =
       keyWasPressed("Space") || keyWasPressed("KeyX") || gamepadWasPressed(2);

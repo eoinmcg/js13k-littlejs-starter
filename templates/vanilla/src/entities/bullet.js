@@ -1,11 +1,11 @@
-import data from "../data.json" assert { type: "json" };
+import data from "../data.json";
 import GameObject from "./gameObject"
 
 export default class Bullet extends GameObject {
 
   constructor(pos) {
-    super(pos, vec2(2,3), tile(3,4));
-    this.velocity = vec2(0,2);
+    super(pos, vec2(2, 3), tile(3, 4));
+    this.velocity = vec2(0, 2);
     this.name = 'bullet';
     this.setCollision();
   }
