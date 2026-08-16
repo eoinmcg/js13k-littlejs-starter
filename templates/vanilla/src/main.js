@@ -7,7 +7,7 @@ import { tune } from "./tune.js";
 document.title = data.title;
 
 // uncomment to if you experience tile bleed
-// tileFixBleedScale = 0.5;
+tileFixBleedScale = 0.5;
 
 // uncomment to hide fps counter at top of screen
 // setShowWatermark(false)
@@ -19,11 +19,12 @@ setTouchGamepadSize(50);
 setTouchGamepadAnalog(false);
 
 
-let player, font;
+let player;
 let score = 0;
 let gameOver = 0;
 let ready = false;
-const music = new Music(tune);
+const music = new ZzFXMusic(tune);
+
 
 const sfx = {}
 Object.keys(data.sfx).forEach((key) => {
@@ -37,7 +38,6 @@ const setGameOver = (val) => {
   music.stop();
 };
 const startGame = (opts) => {
-  clearInput();
   setGameOver(false);
   player = new Player({ sfx, setGameOver });
   music.play();
@@ -49,8 +49,6 @@ function gameInit() {
   setCanvasFixedSize(gameSize);
   setCanvasMaxSize(gameSize);
   setCameraScale(data.tileSize);
-
-  font = new FontImage();
 }
 
 function gameUpdate() {
@@ -84,7 +82,7 @@ function gameRender() {
   if (!ready) {
     const center = data.width / 2;
     drawRect(vec2(0), vec2(data.width, data.height), new Color().setHex("#333"));
-    font.drawTextScreen(data.title, vec2(center, data.height / 3), 2, true);
+    drawTextScreen(data.title, vec2(center, data.height / 3), 20, WHITE, 1, BLACK);
 
     // example of drawing a tile that is 8x8 rather than
     // the default 4x4 that we defined in data.json
@@ -95,26 +93,21 @@ function gameRender() {
     );
 
     if (flash)
-      font.drawTextScreen("READY?", vec2(center, data.height / 1.5), 1.5, true);
+      drawTextScreen("READY?", vec2(center, data.height / 1.5), 15, WHITE);
 
     return;
   }
 
-  font.drawTextScreen(String(score).padStart(5, "0"), vec2(160, 20), 2, true);
+  drawTextScreen(String(score).padStart(5, "0"), vec2(160, mainCanvasSize.y - 30), 20, WHITE);
 
   if (gameOver && flash) {
-    font.drawTextScreen("Game Over", vec2(150, data.height / 2), 3, true);
+    drawTextScreen("Game Over", vec2(150, data.height / 2), 30, RED);
     return;
   }
 }
 
 function gameRenderPost() {
   // draw to overlay canvas for hud rendering
-  drawTextScreen(
-    "LittleJS JS13K Demo",
-    vec2(mainCanvasSize.x / 2, mainCanvasSize.y - 15),
-    15,
-  );
   if (ready) {
     Starfield(gameOver, mainContext);
   }
@@ -124,3 +117,4 @@ function gameRenderPost() {
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, [
   data.tiles,
 ]);
+

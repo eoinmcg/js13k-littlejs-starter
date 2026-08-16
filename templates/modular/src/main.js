@@ -37,11 +37,11 @@ LJS.setTouchGamepadEnable(true);
 LJS.setTouchGamepadSize(50);
 LJS.setTouchGamepadAnalog(false);
 
-let player, font;
+let player;
 let score = 0;
 let gameOver = 0;
 let ready = false;
-const music = new Music(tune);
+const music = new ZzFXMusic(tune);
 
 const sfx = {}
 Object.keys(data.sfx).forEach((key) => {
@@ -101,7 +101,7 @@ function gameRender() {
   if (!ready) {
     const center = data.width / 2;
     drawRect(vec2(0), vec2(data.width, data.height), new Color().setHex("#333"));
-    font.drawTextScreen(data.title, vec2(center, data.height / 3), 2, true);
+    drawTextScreen(data.title, vec2(center, data.height / 3), 20, WHITE, 1, BLACK);
 
     // example of drawing a tile that is 8x8 rather than
     // the default 4x4 that we defined in data.json
@@ -112,7 +112,7 @@ function gameRender() {
     );
 
     if (flash)
-      font.drawTextScreen("READY?", vec2(center, data.height / 1.5), 1.5, true);
+      drawTextScreen("READY?", vec2(center, data.height / 1.5), 15, WHITE);
 
     return;
   }
@@ -121,18 +121,13 @@ function gameRender() {
   font.drawTextScreen(String(score).padStart(5, "0"), vec2(160, 30), 2, true);
 
   if (gameOver && flash) {
-    font.drawTextScreen("Game Over", vec2(150, data.height / 2), 2, true);
+    drawTextScreen("Game Over", vec2(150, data.height / 2), 30, RED);
     return;
   }
 }
 
 function gameRenderPost() {
   // draw to overlay canvas for hud rendering
-  drawTextScreen(
-    "LittleJS JS13K Demo",
-    vec2(mainCanvasSize.x / 2, LJS.mainCanvasSize.y - 15),
-    15,
-  );
   if (ready) {
     Starfield(gameOver);
   }

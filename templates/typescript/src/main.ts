@@ -23,6 +23,7 @@ import Player from "./entities/player";
 import Baddie from "./entities/baddie";
 import Starfield from "./starfield";
 import { tune } from "./tune.js";
+import { ZzFXMusic } from "littlejs-js13k";
 
 document.title = data.title;
 
@@ -39,11 +40,10 @@ LJS.setTouchGamepadAnalog(false);
 
 
 let player: Player | undefined;
-let font: FontImage;
 let score = 0;
 let gameOver: number = 0;
 let ready = false;
-const music = new Music(tune as [any[], any[], any[], number]);
+const music = new ZzFXMusic(tune as [any[], any[], any[], number]);
 
 type SfxMap = Record<string, Sound>;
 const sfx: SfxMap = {}
@@ -74,8 +74,6 @@ function gameInit(): void {
   LJS.setCanvasFixedSize(gameSize);
   LJS.setCanvasMaxSize(gameSize);
   LJS.setCameraScale(data.tileSize);
-
-  font = new FontImage();
 }
 
 function gameUpdate(): void {
@@ -108,7 +106,7 @@ function gameRender(): void {
   if (!ready) {
     const center = data.width / 2;
     drawRect(vec2(0), vec2(data.width, data.height), new Color().setHex("#333"));
-    font.drawTextScreen(data.title, vec2(center, data.height / 3), 2, true);
+    drawTextScreen(data.title, vec2(center, data.height / 3), 20, WHITE, 1, BLACK);
 
     // example of drawing a tile that is 8x8 rather than
     // the default 4x4 that we defined in data.json
@@ -119,7 +117,7 @@ function gameRender(): void {
     );
 
     if (flash)
-      font.drawTextScreen("READY?", vec2(center, data.height / 1.5), 1.5, true);
+      drawTextScreen("READY?", vec2(center, data.height / 1.5), 15, WHITE);
 
     return;
   }
@@ -128,18 +126,13 @@ function gameRender(): void {
   font.drawTextScreen(String(score).padStart(5, "0"), vec2(160, 30), 2, true);
 
   if (gameOver && flash) {
-    font.drawTextScreen("Game Over", vec2(150, data.height / 2), 2, true);
+    drawTextScreen("Game Over", vec2(150, data.height / 2), 30, RED);
     return;
   }
 }
 
 function gameRenderPost() {
   // draw to overlay canvas for hud rendering
-  drawTextScreen(
-    "LittleJS JS13K Demo",
-    vec2(mainCanvasSize.x / 2, LJS.mainCanvasSize.y - 15),
-    15,
-  );
   if (ready) {
     Starfield(gameOver);
   }
@@ -148,4 +141,3 @@ function gameRenderPost() {
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, [
   data.tiles,
 ]);
-
