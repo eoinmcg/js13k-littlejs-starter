@@ -1,4 +1,4 @@
-declare module "littlejsengine" {
+declare module "littlejs-js13k" {
     /**
      * LittleJS - The Tiny Fast JavaScript Game Engine
      * MIT License - Copyright 2021 Frank Force
@@ -59,10 +59,14 @@ declare module "littlejsengine" {
      *  @default false
      *  @memberof Engine */
     export let paused: boolean;
-    /** Set if game is paused
-     *  @param {Boolean} isPaused
+    /** Get if game is paused
+     *  @return {Boolean}
      *  @memberof Engine */
-    export function setPaused(isPaused: boolean): void;
+    export function getPaused(): boolean;
+    /** Set if game is paused
+     *  @param {Boolean} [isPaused]
+     *  @memberof Engine */
+    export function setPaused(isPaused?: boolean): void;
     /** Startup LittleJS engine with your callback functions
      *  @param {Function|function():Promise} gameInit - Called once after the engine starts up
      *  @param {Function} gameUpdate - Called every frame before objects are updated
@@ -228,6 +232,11 @@ declare module "littlejsengine" {
      *  @default Vector2()
      *  @memberof Settings */
     export let cameraPos: Vector2;
+    /** Rotation angle of camera in world space
+     *  @type {Number}
+     *  @default
+     *  @memberof Settings */
+    export let cameraAngle: number;
     /** Scale of camera in world space
      *  @type {Number}
      *  @default
@@ -329,11 +338,6 @@ declare module "littlejsengine" {
      *  @default
      *  @memberof Settings */
     export let glEnable: boolean;
-    /** Fixes slow rendering in some browsers by not compositing the WebGL canvas
-     *  @type {Boolean}
-     *  @default
-     *  @memberof Settings */
-    export let glOverlay: boolean;
     /** Should gamepads be allowed
      *  @type {Boolean}
      *  @default
@@ -411,15 +415,14 @@ declare module "littlejsengine" {
      *  @default Vector2(640,80)
      *  @memberof Settings */
     export let medalDisplaySize: Vector2;
-    /** Size of icon in medal display
-     *  @type {Number}
-     *  @default
-     *  @memberof Settings */
-    export let medalDisplayIconSize: number;
     /** Set position of camera in world space
      *  @param {Vector2} pos
      *  @memberof Settings */
     export function setCameraPos(pos: Vector2): void;
+    /** Set angle of camera in world space
+     *  @param {Number} angle
+     *  @memberof Settings */
+    export function setCameraAngle(angle: number): void;
     /** Set scale of camera in world space
      *  @param {Number} scale
      *  @memberof Settings */
@@ -455,11 +458,7 @@ declare module "littlejsengine" {
     /** Set if webgl rendering is enabled
      *  @param {Boolean} enable
      *  @memberof Settings */
-    export function setGlEnable(enable: boolean): void;
-    /** Set to not composite the WebGL canvas
-     *  @param {Boolean} overlay
-     *  @memberof Settings */
-    export function setGlOverlay(overlay: boolean): void;
+    export function setGLEnable(enable: boolean): void;
     /** Set default size of tiles in pixels
      *  @param {Vector2} size
      *  @memberof Settings */
@@ -568,10 +567,6 @@ declare module "littlejsengine" {
      *  @param {Vector2} size
      *  @memberof Settings */
     export function setMedalDisplaySize(size: Vector2): void;
-    /** Set size of icon in medal display
-     *  @param {Number} size
-     *  @memberof Settings */
-    export function setMedalDisplayIconSize(size: number): void;
     /** Set to stop medals from being unlockable
      *  @param {Boolean} preventUnlock
      *  @memberof Settings */
@@ -585,65 +580,66 @@ declare module "littlejsengine" {
      *  @memberof Debug */
     export function setDebugKey(key: string): void;
     /**
-     * LittleJS Utility Classes and Functions
-     * - General purpose math library
+     * LittleJS Math Classes and Functions
      * - Vector2 - fast, simple, easy 2D vector class
      * - Color - holds a rgba color with some math functions
-     * - Timer - tracks time automatically
      * - RandomGenerator - seeded random number generator
-     * @namespace Utilities
+     * - Math shortcuts, interpolation, clamping and wrapping
+     * - Angle utilities with wrap-around support
+     * - Collision detection helpers
+     * @namespace Math
      */
     /** A shortcut to get Math.PI
      *  @type {number}
      *  @default Math.PI
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const PI: number;
     /** Returns absolute value of value passed in
-     *  @param {number} value
+     *  @param {number} x
      *  @return {number}
-     *  @memberof Utilities */
-    export function abs(value: number): number;
+     *  @memberof Math */
+    export const abs: (x: number) => number;
     /** Returns lowest value passed in
      *  @param {...number} values
      *  @return {number}
-     *  @memberof Utilities */
-    export function min(...values: number[]): number;
+     *  @memberof Math */
+    export const min: (...values: number[]) => number;
     /** Returns highest value passed in
      *  @param {...number} values
      *  @return {number}
-     *  @memberof Utilities */
-    export function max(...values: number[]): number;
+     *  @memberof Math */
+    export const max: (...values: number[]) => number;
     /** Returns the sign of value passed in
-     *  @param {number} value
+     *  @param {number} x
      *  @return {number}
-     *  @memberof Utilities */
-    export function sign(value: number): number;
+     *  @memberof Math */
+    export function sign(x: number): number;
     /** Returns first parm modulo the second param, but adjusted so negative numbers work as expected
      *  @param {number} dividend
      *  @param {number} [divisor]
      *  @return {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function mod(dividend: number, divisor?: number): number;
     /** Clamps the value between max and min
      *  @param {number} value
      *  @param {number} [min]
      *  @param {number} [max]
      *  @return {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function clamp(value: number, min?: number, max?: number): number;
     /** Returns what percentage the value is between valueA and valueB
      *  @param {number} value
      *  @param {number} valueA
      *  @param {number} valueB
      *  @return {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function percent(value: number, valueA: number, valueB: number): number;
     /** Returns signed wrapped distance between the two values passed in
      *  @param {number} valueA
      *  @param {number} valueB
      *  @param {number} [wrapSize]
      *  @returns {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function distanceWrap(valueA: number, valueB: number, wrapSize?: number): number;
     /** Linearly interpolates between values passed in with wrapping
      *  @param {number} valueA
@@ -651,37 +647,46 @@ declare module "littlejsengine" {
      *  @param {number} percent
      *  @param {number} [wrapSize]
      *  @returns {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function lerpWrap(valueA: number, valueB: number, percent: number, wrapSize?: number): number;
     /** Returns signed wrapped distance between the two angles passed in
      *  @param {number} angleA
      *  @param {number} angleB
      *  @returns {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function distanceAngle(angleA: number, angleB: number): number;
     /** Linearly interpolates between the angles passed in with wrapping
      *  @param {number} angleA
      *  @param {number} angleB
      *  @param {number} percent
      *  @returns {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function lerpAngle(angleA: number, angleB: number, percent: number): number;
     /** Linearly interpolates between values passed in using percent
      *  @param {number} valueA
      *  @param {number} valueB
      *  @param {number} percent
      *  @return {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function lerp(valueA: number, valueB: number, percent: number): number;
+    /** Applies a percent range to a lerp range
+     *  @param {number} value
+     *  @param {number} percentA
+     *  @param {number} percentB
+     *  @param {number} lerpA
+     *  @param {number} lerpB
+     *  @return {number}
+     *  @memberof Math */
+    export function percentLerp(value: number, percentA: number, percentB: number, lerpA: number, lerpB: number): number;
     /** Applies smoothstep function to the percentage value
      *  @param {number} percent
      *  @return {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function smoothStep(percent: number): number;
     /** Returns the nearest power of two not less then the value
      *  @param {number} value
      *  @return {number}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function nearestPowerOfTwo(value: number): number;
     /** Returns true if two axis aligned bounding boxes are overlapping
      *  this can be used for simple collision detection between objects
@@ -690,7 +695,7 @@ declare module "littlejsengine" {
      *  @param {Vector2} posB          - Center of box B
      *  @param {Vector2} [sizeB=(0,0)] - Size of box B, uses a point if undefined
      *  @return {boolean}              - True if overlapping
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function isOverlapping(posA: Vector2, sizeA: Vector2, posB: Vector2, sizeB?: Vector2): boolean;
     /** Returns true if a line segment is intersecting an axis aligned box
      *  @param {Vector2} start - Start of raycast
@@ -698,15 +703,32 @@ declare module "littlejsengine" {
      *  @param {Vector2} pos   - Center of box
      *  @param {Vector2} size  - Size of box
      *  @return {boolean}      - True if intersecting
-     *  @memberof Utilities */
+     *  @memberof Math */
     export function isIntersecting(start: Vector2, end: Vector2, pos: Vector2, size: Vector2): boolean;
+    /** Walks a line through a grid of unit cells, calling testFunction for each cell
+     *  @param {Vector2}  posStart     - Start of the line
+     *  @param {Vector2}  posEnd       - End of the line
+     *  @param {Function} testFunction - Called with each cell pos, return true to stop
+     *  @param {Vector2}  [normal]     - If passed, set to the surface normal of the hit
+     *  @return {Vector2}              - Hit position, or undefined if nothing was hit
+     *  @memberof Math */
+    export function lineTest(posStart: Vector2, posEnd: Vector2, testFunction: Function, normal?: Vector2): Vector2;
     /** Returns an oscillating wave between 0 and amplitude with frequency of 1 Hz by default
      *  @param {number} [frequency] - Frequency of the wave in Hz
      *  @param {number} [amplitude] - Amplitude (max height) of the wave
      *  @param {number} [t=time]    - Value to use for time of the wave
+     *  @param {number} [offset]    - Phase offset of the wave
+     *  @param {number} [type]      - 0 sine, 1 triangle, 2 square, 3 sawtooth
      *  @return {number}            - Value waving between 0 and amplitude
-     *  @memberof Utilities */
-    export function wave(frequency?: number, amplitude?: number, t?: number): number;
+     *  @memberof Math */
+    export function oscillate(frequency?: number, amplitude?: number, t?: number, offset?: number, type?: number): number;
+    /**
+     * LittleJS Utility Classes and Functions
+     * - Timer - tracks time automatically
+     * - Time formatting helper
+     * - JSON file fetching
+     * @namespace Utilities
+     */
     /** Formats seconds to mm:ss style for display purposes
      *  @param {number} t - time in seconds
      *  @return {string}
@@ -717,6 +739,54 @@ declare module "littlejsengine" {
      *  @return {Promise<object>}
      *  @memberof Utilities */
     export function fetchJSON(url: string): Promise<object>;
+    /** Save a text file to disk
+     *  @param {string} text
+     *  @param {string} [filename]
+     *  @param {string} [type]
+     *  @memberof Utilities */
+    export function saveText(text: string, filename?: string, type?: string): void;
+    /** Save a canvas to disk
+     *  @param {HTMLCanvasElement|OffscreenCanvas} canvas
+     *  @param {string} [filename]
+     *  @param {string} [type]
+     *  @memberof Utilities */
+    export function saveCanvas(canvas: HTMLCanvasElement | OffscreenCanvas, filename?: string, type?: string): void;
+    /** Save a data url to disk
+     *  @param {string} url
+     *  @param {string} [filename]
+     *  @param {number} [revokeTime] - how long before revoking the url
+     *  @memberof Utilities */
+    export function saveDataURL(url: string, filename?: string, revokeTime?: number): void;
+    /** Share content using the native share dialog if available
+     *  @param {string} title - title of the share
+     *  @param {string} url - url to share
+     *  @param {Function} [callback] - Called when share is complete
+     *  @memberof Utilities */
+    export function shareURL(title: string, url: string, callback?: Function): void;
+    /** Read save data from local storage
+     *  @param {string} saveName - unique name for the game/save
+     *  @param {Object} [defaultSaveData] - default values for save
+     *  @return {Object}
+     *  @memberof Utilities */
+    export function readSaveData(saveName: string, defaultSaveData?: any): any;
+    /** Write save data to local storage
+     *  @param {string} saveName - unique name for the game/save
+     *  @param {Object} saveData - object containing data to be saved
+     *  @memberof Utilities */
+    export function writeSaveData(saveName: string, saveData: any): void;
+    /** 1D gradient noise - returns a smooth value in [0, 1] for any real x.
+     *  Integer inputs land on deterministic lattice values; non-integer inputs
+     *  are interpolated with smoothStep for C1 continuity.
+     *  @param {number} x
+     *  @return {number}
+     *  @memberof Utilities */
+    export function noise1D(x: number): number;
+    /** 2D gradient noise - returns a smooth value in [0, 1] for any real (x, y).
+     *  @param {number} x
+     *  @param {number} y
+     *  @return {number}
+     *  @memberof Utilities */
+    export function noise2D(x: number, y: number): number;
     /** Random global functions
      *  @namespace Random */
     /** Returns a random value between the two values passed in
@@ -1078,7 +1148,7 @@ declare module "littlejsengine" {
      * let a = vec2(0, 1); // vector with coordinates (0, 1)
      * a = vec2(5);        // set a to (5, 5)
      * b = vec2();         // set b to (0, 0)
-     * @memberof Utilities
+     * @memberof Math
      */
     export function vec2(x?: number, y?: number): Vector2;
     /**
@@ -1088,7 +1158,7 @@ declare module "littlejsengine" {
      * @param {number} [b=1] - blue
      * @param {number} [a=1] - alpha
      * @return {Color}
-     * @memberof Utilities
+     * @memberof Math
      */
     export function rgb(r?: number, g?: number, b?: number, a?: number): Color;
     /**
@@ -1098,81 +1168,89 @@ declare module "littlejsengine" {
      * @param {number} [l=1] - lightness
      * @param {number} [a=1] - alpha
      * @return {Color}
-     * @memberof Utilities
+     * @memberof Math
      */
     export function hsl(h?: number, s?: number, l?: number, a?: number): Color;
     /**
      * Check if object is a valid Color
      * @param {any} c
      * @return {boolean}
-     * @memberof Utilities
+     * @memberof Math
      */
     export function isColor(c: any): boolean;
     /**
      * Check if object is a valid Vector2
      * @param {any} v
      * @return {boolean}
-     * @memberof Utilities
+     * @memberof Math
      */
     export function isVector2(v: any): boolean;
     /**
      * Check if object is a valid number, not NaN or undefined, but it may be infinite
      * @param {any} n
      * @return {boolean}
-     * @memberof Utilities
+     * @memberof Math
      */
     export function isNumber(n: any): boolean;
+    /**
+     * Check if object can be converted to a string
+     * - Returns true for strings, numbers, and most objects
+     * - Returns false for null and undefined
+     * @param {any} s
+     * @return {boolean}
+     * @memberof Math */
+    export function isStringLike(s: any): boolean;
     /** Color - White
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const WHITE: Color;
     /** Color - Clear White #ffffff with 0 alpha
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const CLEAR_WHITE: Color;
     /** Color - Black
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const BLACK: Color;
     /** Color - Clear Black #000000 with 0 alpha
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const CLEAR_BLACK: Color;
     /** Color - Gray
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const GRAY: Color;
     /** Color - Red
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const RED: Color;
     /** Color - Orange
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const ORANGE: Color;
     /** Color - Yellow
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const YELLOW: Color;
     /** Color - Green
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const GREEN: Color;
     /** Color - Cyan
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const CYAN: Color;
     /** Color - Blue
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const BLUE: Color;
     /** Color - Purple
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const PURPLE: Color;
     /** Color - Magenta
      *  @type {Color}
-     *  @memberof Utilities */
+     *  @memberof Math */
     export const MAGENTA: Color;
     /** Array containing texture info for batch rendering system
      *  @type {Array<TextureInfo>}
@@ -1184,7 +1262,7 @@ declare module "littlejsengine" {
      * - If an index is passed in, the tile size and index will determine the position
      * @param {(Number|Vector2)} [pos=0]                - Index of tile in sheet
      * @param {(Number|Vector2)} [size=tileSizeDefault] - Size of tile in pixels
-     * @param {Number} [textureIndex]                   - Texture index to use
+     * @param {Number|TextureInfo} [texture]            - Texture index or texture info to use
      * @param {Number} [padding]                        - How many pixels padding around tiles
      * @return {TileInfo}
      * @example
@@ -1194,7 +1272,7 @@ declare module "littlejsengine" {
      * tile(vec2(4,8), vec2(30,10))  // a tile at index (4,8) with a size of (30,10)
      * @memberof Draw
      */
-    export function tile(pos?: (number | Vector2), size?: (number | Vector2), textureIndex?: number, padding?: number): TileInfo;
+    export function tile(pos?: (number | Vector2), size?: (number | Vector2), texture?: number | TextureInfo, padding?: number): TileInfo;
     /**
      * Tile Info - Stores info about how to draw a tile
      */
@@ -1202,16 +1280,16 @@ declare module "littlejsengine" {
         /** Create a tile info object
          *  @param {Vector2} [pos=(0,0)]            - Top left corner of tile in pixels
          *  @param {Vector2} [size=tileSizeDefault] - Size of tile in pixels
-         *  @param {Number}  [textureIndex]         - Texture index to use
+         *  @param {TextureInfo} [textureInfo=textureInfos[0]] - Texture info to use
          *  @param {Number}  [padding]              - How many pixels padding around tiles
          */
-        constructor(pos?: Vector2, size?: Vector2, textureIndex?: number, padding?: number);
+        constructor(pos?: Vector2, size?: Vector2, textureInfo?: TextureInfo, padding?: number);
         /** @property {Vector2} - Top left corner of tile in pixels */
         pos: Vector2;
         /** @property {Vector2} - Size of tile in pixels */
         size: Vector2;
-        /** @property {Number} - Texture index to use */
-        textureIndex: number;
+        /** @property {TextureInfo} - The texture info for this tile */
+        textureInfo: TextureInfo;
         /** @property {Number} - How many pixels padding around tiles */
         padding: number;
         /** Returns a copy of this tile offset by a vector
@@ -1224,10 +1302,6 @@ declare module "littlejsengine" {
         *  @return {TileInfo}
         */
         frame(frame: number): TileInfo;
-        /** Returns the texture info for this tile
-        *  @return {TextureInfo}
-        */
-        getTextureInfo(): TextureInfo;
     }
     /** Texture Info - Stores info about each texture */
     export class TextureInfo {
@@ -1296,6 +1370,22 @@ declare module "littlejsengine" {
      *  @return {Vector2}
      *  @memberof Draw */
     export function worldToScreen(worldPos: Vector2): Vector2;
+    /** Convert a screen space delta to world space, applying camera rotation but not position
+     *  @param {Vector2} screenDelta
+     *  @return {Vector2}
+     *  @memberof Draw */
+    export function screenToWorldDelta(screenDelta: Vector2): Vector2;
+    /** Convert a world space delta to screen space, applying camera rotation but not position
+     *  @param {Vector2} worldDelta
+     *  @return {Vector2}
+     *  @memberof Draw */
+    export function worldToScreenDelta(worldDelta: Vector2): Vector2;
+    /** Returns true if a world space circle is at least partly on screen
+     *  @param {Vector2} pos
+     *  @param {Vector2|Number} [size] - Diameter, or a vec2 whose length is used
+     *  @return {Boolean}
+     *  @memberof Draw */
+    export function isOnScreen(pos: Vector2, size?: Vector2 | number): boolean;
     /** Draw textured tile centered in world space, with color applied if using WebGL
      *  @param {Vector2} pos                        - Center of the tile in world space
      *  @param {Vector2} [size=(1,1)]               - Size of the tile in world space
@@ -1416,51 +1506,11 @@ declare module "littlejsengine" {
      *  @param {Boolean} [useWebGL=glEnable]
      *  @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} [context=mainContext]
      *  @memberof Draw */
-    export function setBlendMode(additive?: boolean, useWebGL?: boolean, context?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): void;
+    export function setAdditiveBlendMode(additive?: boolean, useWebGL?: boolean, context?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): void;
     /** Combines all LittleJS canvases onto the main canvas and clears them
      *  This is necessary for things like saving a screenshot
      *  @memberof Draw */
     export function combineCanvases(): void;
-    export let engineFontImage: any;
-    /**
-     * Font Image Object - Draw text on a 2D canvas by using characters in an image
-     * - 96 characters (from space to tilde) are stored in an image
-     * - Uses a default 8x8 font if none is supplied
-     * - You can also use fonts from the main tile sheet
-     * @example
-     * // use built in font
-     * const font = new FontImage;
-     *
-     * // draw text
-     * font.drawTextScreen("LittleJS\nHello World!", vec2(200, 50));
-     */
-    export class FontImage {
-        /** Create an image font
-         *  @param {HTMLImageElement} [image]    - Image for the font, if undefined default font is used
-         *  @param {Vector2} [tileSize=(8,8)]    - Size of the font source tiles
-         *  @param {Vector2} [paddingSize=(0,1)] - How much extra space to add between characters
-         *  @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} [context=overlayContext] - context to draw to
-         */
-        constructor(image?: HTMLImageElement, tileSize?: Vector2, paddingSize?: Vector2, context?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D);
-        image: any;
-        tileSize: Vector2;
-        paddingSize: Vector2;
-        context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
-        /** Draw text in world space using the image font
-         *  @param {String}  text
-         *  @param {Vector2} pos
-         *  @param {Number}  [scale=.25]
-         *  @param {Boolean} [center]
-         */
-        drawText(text: string, pos: Vector2, scale?: number, center?: boolean): void;
-        /** Draw text in screen space using the image font
-         *  @param {String}  text
-         *  @param {Vector2} pos
-         *  @param {Number}  [scale]
-         *  @param {Boolean} [center]
-         */
-        drawTextScreen(text: string, pos: Vector2, scale?: number, center?: boolean): void;
-    }
     /** Returns true if fullscreen mode is active
      *  @return {Boolean}
      *  @memberof Draw */
@@ -1592,7 +1642,15 @@ declare module "littlejsengine" {
     export function keyDirection(up?: string, down?: string, left?: string, right?: string): Vector2;
     /** Clears all input
      *  @memberof Input */
-    export function clearInput(): void;
+    export function inputClear(): void;
+    /** Clears an input key state
+     *  @param {String|Number} key
+     *  @param {Number} [device]
+     *  @param {Boolean} [clearDown=true]
+     *  @param {Boolean} [clearPressed=true]
+     *  @param {Boolean} [clearReleased=true]
+     *  @memberof Input */
+    export function inputClearKey(key: string | number, device?: number, clearDown?: boolean, clearPressed?: boolean, clearReleased?: boolean): void;
     /**
      * LittleJS Input System
      * - Tracks keyboard down, pressed, and released
@@ -1636,10 +1694,14 @@ declare module "littlejsengine" {
      *  @type {Boolean}
      *  @memberof Input */
     export let isUsingGamepad: boolean;
-    /** Prevents input continuing to the default browser handling (false by default)
+    /** Prevents input continuing to the default browser handling (true by default)
      *  @type {Boolean}
      *  @memberof Input */
-    export let preventDefaultInput: boolean;
+    export let inputPreventDefault: boolean;
+    /** Set to prevent input continuing to the default browser handling
+     *  @param {Boolean} preventDefault
+     *  @memberof Input */
+    export function setInputPreventDefault(preventDefault: boolean): void;
     /** Returns true if gamepad button is down
      *  @param {Number} button
      *  @param {Number} [gamepad]
@@ -1664,7 +1726,6 @@ declare module "littlejsengine" {
      *  @return {Vector2}
      *  @memberof Input */
     export function gamepadStick(stick: number, gamepad?: number): Vector2;
-    export function mouseToScreen(mousePos: any): Vector2;
     export function gamepadsUpdate(): void;
     /** Pulse the vibration hardware if it exists
      *  @param {Number|Array} [pattern] - single value in ms or vibration interval array
@@ -1760,12 +1821,12 @@ declare module "littlejsengine" {
         constructor(filename: string, randomness?: number, range?: number, taper?: number, onloadCallback?: Function);
     }
     /**
-     * Music Object - Stores a zzfx music track for later use
+     * ZzFX Music Object - Stores a zzfx music track for later use
      *
      * <a href=https://keithclark.github.io/ZzFXM/>Create music with the ZzFXM tracker.</a>
      * @example
      * // create some music
-     * const music_example = new Music(
+     * const music_example = new ZzFXMusic(
      * [
      *     [                         // instruments
      *       [,0,400]                // simple note
@@ -1789,14 +1850,14 @@ declare module "littlejsengine" {
      * // play the music
      * music_example.play();
      */
-    export class Music extends Sound {
+    export class ZzFXMusic extends Sound {
         /** Create a music object and cache the zzfx music samples for later use
          *  @param {[Array, Array, Array, Number]} zzfxMusic - Array of zzfx music parameters
          */
         constructor(zzfxMusic: [any[], any[], any[], number]);
         sampleChannels: any[];
-        /** Play the music
-         *  @param {Number}  [volume=1] - How much to scale volume by
+        /** Play the music that loops by default
+         *  @param {Number}  [volume] - How much to scale volume by
          *  @param {Boolean} [loop] - True if the music should loop
          *  @return {AudioBufferSourceNode} - The audio source node
          */
@@ -1859,6 +1920,10 @@ declare module "littlejsengine" {
      *  @return {AudioBufferSourceNode} - The audio node of the sound played
      *  @memberof Audio */
     export function zzfx(...zzfxSound: any[]): AudioBufferSourceNode;
+    /** Default sample rate used for all ZzFX sounds
+     *  @default 44100
+     *  @memberof Audio */
+    export const audioDefaultSampleRate: 44100;
     /**
      * LittleJS Object System
      */
@@ -1935,8 +2000,10 @@ declare module "littlejsengine" {
         spawnTime: number;
         /** @property {Array}   - List of children of this object */
         children: any[];
-        /** @property {Boolean}  - Limit object speed using linear or circular math */
-        clampSpeedLinear: boolean;
+        /** @property {Boolean} - Limit object speed along x and y axis */
+        clampSpeed: boolean;
+        /** @property {EngineObject} - Object we are standing on, if any  */
+        groundObject: any;
         /** @property {EngineObject} - Parent of object if in local space  */
         parent: any;
         /** @property {Vector2}      - Local position if child */
@@ -1955,7 +2022,6 @@ declare module "littlejsengine" {
         updateTransforms(): void;
         /** Update the object physics, called automatically by engine once each frame */
         update(): void;
-        groundObject: any;
         /** Render the object, draws a tile by default, automatically called each frame, sorted by renderOrder */
         render(): void;
         /** Destroy this object, destroy it's children, detach it's parent, and mark it for removal */
@@ -1989,6 +2055,9 @@ declare module "littlejsengine" {
         /** Apply acceleration to this object (adjust velocity, not affected by mass)
          *  @param {Vector2} acceleration */
         applyAcceleration(acceleration: Vector2): void;
+        /** Apply angular acceleration to this object
+         *  @param {Number} acceleration */
+        applyAngularAcceleration(acceleration: number): void;
         /** Apply force to this object (adjust velocity, affected by mass)
          *  @param {Vector2} force */
         applyForce(force: Vector2): void;
@@ -2052,17 +2121,20 @@ declare module "littlejsengine" {
      *  @param {Vector2}      pos
      *  @param {Vector2}      [size=(0,0)]
      *  @param {EngineObject} [object]
+     *  @param {Boolean}      [solidOnly] - Ignored, all tiles are solid in this version
      *  @return {Boolean}
      *  @memberof TileCollision */
-    export function tileCollisionTest(pos: Vector2, size?: Vector2, object?: EngineObject): boolean;
-    /** Return the center of first tile hit, undefined if nothing was hit.
-     *  This does not return the exact intersection, but the center of the tile hit.
+    export function tileCollisionTest(pos: Vector2, size?: Vector2, object?: EngineObject, solidOnly?: boolean): boolean;
+    /** Return the exact position of the boundary of the first tile hit, undefined if nothing was hit.
+     *  The point will be inside the colliding tile if it hits
      *  @param {Vector2}      posStart
      *  @param {Vector2}      posEnd
      *  @param {EngineObject} [object]
+     *  @param {Vector2}      [normal] - If passed, set to the normal of the surface hit
+     *  @param {Boolean}      [solidOnly] - Ignored, all tiles are solid in this version
      *  @return {Vector2}
      *  @memberof TileCollision */
-    export function tileCollisionRaycast(posStart: Vector2, posEnd: Vector2, object?: EngineObject): Vector2;
+    export function tileCollisionRaycast(posStart: Vector2, posEnd: Vector2, object?: EngineObject, normal?: Vector2, solidOnly?: boolean): Vector2;
     /**
      * Tile layer data object stores info about how to render a tile
      * @example
@@ -2105,21 +2177,16 @@ declare module "littlejsengine" {
      */
     export class TileLayer extends EngineObject {
         /** Create a tile layer object
-        *  @param {Vector2}  [position=(0,0)]     - World space position
-        *  @param {Vector2}  [size=tileCollisionSize] - World space size
-        *  @param {TileInfo} [tileInfo]    - Tile info for layer
-        *  @param {Vector2}  [scale=(1,1)] - How much to scale this layer when rendered
+        *  @param {Vector2}  position     - World space position
+        *  @param {Vector2}  size         - World space size
+        *  @param {TileInfo} [tileInfo]   - Tile info for layer
         *  @param {Number}   [renderOrder] - Objects are sorted by renderOrder
         */
-        constructor(position?: Vector2, size?: Vector2, tileInfo?: TileInfo, scale?: Vector2, renderOrder?: number);
+        constructor(position: Vector2, size: Vector2, tileInfo?: TileInfo, renderOrder?: number);
         /** @property {HTMLCanvasElement} - The canvas used by this tile layer */
         canvas: HTMLCanvasElement;
         /** @property {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} - The 2D canvas context used by this tile layer */
         context: CanvasRenderingContext2D;
-        /** @property {Vector2} - How much to scale this layer when rendered */
-        scale: Vector2;
-        /** @property {Boolean} - If true this layer will render to overlay canvas and appear above all objects */
-        isOverlay: boolean;
         data: TileLayerData[];
         /** Draw all the tile data to an offscreen canvas
          *  - This may be slow in some browsers but only needs to be done once */
@@ -2153,8 +2220,8 @@ declare module "littlejsengine" {
          *  @param {Vector2} layerPos - Local position in array
          *  @return {TileLayerData} */
         getData(layerPos: Vector2): TileLayerData;
-        /** @type {[HTMLCanvasElement, CanvasRenderingContext2D, Vector2, Vector2, number]} */
-        savedRenderSettings: [HTMLCanvasElement, CanvasRenderingContext2D, Vector2, Vector2, number];
+        /** @type {[HTMLCanvasElement, CanvasRenderingContext2D, Vector2, Vector2, number, number]} */
+        savedRenderSettings: [HTMLCanvasElement, CanvasRenderingContext2D, Vector2, Vector2, number, number];
         /** Draw a tile directly onto the layer canvas in world space
          *  @param {Vector2}  pos
          *  @param {Vector2}  [size=(1,1)]
@@ -2377,9 +2444,9 @@ declare module "littlejsengine" {
         render(hidePercent?: number): void;
         /** Render the icon for a medal
          *  @param {Vector2} pos - Screen space position
-         *  @param {Number} [size=medalDisplayIconSize] - Screen space size
+         *  @param {Number} size - Screen space size
          */
-        renderIcon(pos: Vector2, size?: number): void;
+        renderIcon(pos: Vector2, size: number): void;
         storageKey(): string;
     }
 }
