@@ -14,7 +14,8 @@ import {
   Color,
   drawRect,
   drawTextScreen,
-  Music, Sound, FontImage
+  Sound,
+  ZzFXMusic
 } from "@engine/littlejs.esm";
 
 
@@ -23,7 +24,6 @@ import Player from "./entities/player";
 import Baddie from "./entities/baddie";
 import Starfield from "./starfield";
 import { tune } from "./tune.js";
-import { ZzFXMusic } from "littlejs-js13k";
 
 document.title = data.title;
 
