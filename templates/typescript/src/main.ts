@@ -123,7 +123,7 @@ function gameRender(): void {
   }
 
 
-  font.drawTextScreen(String(score).padStart(5, "0"), vec2(160, 30), 2, true);
+  drawTextScreen(String(score).padStart(5, "0"), vec2(160, mainCanvasSize.y - 30), 20, WHITE);
 
   if (gameOver && flash) {
     drawTextScreen("Game Over", vec2(150, data.height / 2), 30, RED);
