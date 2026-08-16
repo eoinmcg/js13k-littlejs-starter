@@ -62,7 +62,6 @@ interface GameOpts {
   setGameOver: (val: number) => void;
 }
 const startGame = (opts: GameOpts): void => {
-  LJS.clearInput();
   setGameOver(0);
   player = new Player({ sfx, setGameOver });
   music.play();

@@ -55,7 +55,6 @@ const setGameOver = (val) => {
   music.stop();
 };
 const startGame = (opts) => {
-  LJS.clearInput();
   setGameOver(false);
   player = new Player({ sfx, setGameOver });
   music.play();
