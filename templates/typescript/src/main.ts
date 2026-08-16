@@ -15,7 +15,7 @@ import {
   drawRect,
   drawTextScreen,
   Sound,
-  ZzFXMusic, WHITE, BLACK
+  ZzFXMusic, WHITE, BLACK, RED
 } from "@engine/littlejs.esm";
 
 
