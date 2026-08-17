@@ -3,7 +3,8 @@ import {
 } from "@engine/littlejs.esm";
 
 import GameObject from "./gameObject";
-import { Vector2 } from "littlejsengine";
+import type { Vector2 } from "@engine/littlejs.esm";
+
 
 export default class Bullet extends GameObject {
 
