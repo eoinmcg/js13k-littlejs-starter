@@ -98,8 +98,8 @@ function gameRender() {
   // splash screen
   if (!ready) {
     const center = data.width / 2;
-    drawRect(vec2(0), vec2(data.width, data.height), new Color().setHex("#333"));
-    drawTextScreen(data.title, vec2(center, data.height / 3), 20, WHITE, 1, BLACK);
+    drawRect(vec2(0), vec2(data.width, data.height), new Color().setHex("#222"));
+    drawTextScreen(data.title, vec2(center, data.height * .3), 36, WHITE, 3, BLACK);
 
     // example of drawing a tile that is 8x8 rather than
     // the default 4x4 that we defined in data.json
