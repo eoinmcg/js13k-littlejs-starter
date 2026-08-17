@@ -1511,6 +1511,46 @@ declare module "littlejs-js13k" {
      *  This is necessary for things like saving a screenshot
      *  @memberof Draw */
     export function combineCanvases(): void;
+    /**
+     * Image Font Object - Draw text on a 2D canvas by using characters in an image
+     * - 96 characters (from space to tilde) are stored in an image
+     * - Uses a default 8x8 font if no tile info is supplied
+     * - You can also use fonts from the main tile sheet
+     * @example
+     * // use built in font
+     * const font = new ImageFont;
+     *
+     * // draw text
+     * font.drawTextScreen("LittleJS\nHello World!", vec2(200, 50), 32);
+     */
+    export class ImageFont {
+        /** Create an image font
+         *  @param {TileInfo} [tileInfo] - Tile info of first character in font, if undefined the built in 8x8 font is used
+         */
+        constructor(tileInfo?: TileInfo);
+        /** @property {TileInfo} - Tile info for the font, undefined to use the built in font */
+        tileInfo: TileInfo;
+        /** Draw text in world space using the image font
+         *  @param {String}  text
+         *  @param {Vector2} pos
+         *  @param {Vector2|Number} [size] - Size of characters in world space
+         *  @param {Boolean} [center]
+         *  @param {Color}   [color] - Not supported by this version, tint on port
+         *  @param {Boolean} [useWebGL] - Not supported by this version
+         *  @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} [context=overlayContext]
+         */
+        drawText(text: string, pos: Vector2, size?: Vector2 | number, center?: boolean, color?: Color, useWebGL?: boolean, context?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): void;
+        /** Draw text in screen space using the image font
+         *  @param {String}  text
+         *  @param {Vector2} pos
+         *  @param {Vector2|Number} size - Size of characters in pixels
+         *  @param {Boolean} [center]
+         *  @param {Color}   [color] - Not supported by this version, tint on port
+         *  @param {Boolean} [useWebGL] - Not supported by this version
+         *  @param {CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D} [context=overlayContext]
+         */
+        drawTextScreen(text: string, pos: Vector2, size: Vector2 | number, center?: boolean, color?: Color, useWebGL?: boolean, context?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D): void;
+    }
     /** Returns true if fullscreen mode is active
      *  @return {Boolean}
      *  @memberof Draw */

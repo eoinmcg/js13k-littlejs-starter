@@ -18,25 +18,24 @@ setTouchGamepadEnable(true);
 setTouchGamepadSize(50);
 setTouchGamepadAnalog(false);
 
-
-let player;
+let player, font;
 let score = 0;
 let gameOver = 0;
 let ready = false;
 const music = new ZzFXMusic(tune);
 
-
 const sfx = {}
 Object.keys(data.sfx).forEach((key) => {
   sfx[key] = new Sound(data.sfx[key].split(','));
 });
-window.sfx = sfx;
 
 const updateScore = (val = 10) => (score += val);
+
 const setGameOver = (val) => {
   gameOver = val;
   music.stop();
 };
+
 const startGame = (opts) => {
   setGameOver(false);
   player = new Player({ sfx, setGameOver });
@@ -49,6 +48,9 @@ function gameInit() {
   setCanvasFixedSize(gameSize);
   setCanvasMaxSize(gameSize);
   setCameraScale(data.tileSize);
+
+  font = new ImageFont;
+
 }
 
 function gameUpdate() {
@@ -81,8 +83,9 @@ function gameRender() {
   // splash screen
   if (!ready) {
     const center = data.width / 2;
-    drawRect(vec2(0), vec2(data.width, data.height), new Color().setHex("#333"));
-    drawTextScreen(data.title, vec2(center, data.height / 3), 20, WHITE, 1, BLACK);
+    drawRect(vec2(0), vec2(data.width, data.height), new Color().setHex("#222"));
+    drawTextScreen(data.title, vec2(center, data.height * .3), 36, WHITE, 3, BLACK);
+
 
     // example of drawing a tile that is 8x8 rather than
     // the default 4x4 that we defined in data.json
@@ -93,15 +96,15 @@ function gameRender() {
     );
 
     if (flash)
-      drawTextScreen("READY?", vec2(center, data.height / 1.5), 15, WHITE);
+      font.drawTextScreen("READY?", vec2(center, data.height / 1.5), 16);
 
     return;
   }
 
-  drawTextScreen(String(score).padStart(5, "0"), vec2(160, mainCanvasSize.y - 30), 20, WHITE);
+  font.drawTextScreen(String(score).padStart(5, "0"), vec2(160, 40), 16);
 
   if (gameOver && flash) {
-    drawTextScreen("Game Over", vec2(150, data.height / 2), 30, RED);
+    font.drawTextScreen("Game Over", vec2(150, data.height / 2), 32);
     return;
   }
 }
@@ -112,7 +115,6 @@ function gameRenderPost() {
     Starfield(gameOver, mainContext);
   }
 }
-
 
 engineInit(gameInit, gameUpdate, gameUpdatePost, gameRender, gameRenderPost, [
   data.tiles,
